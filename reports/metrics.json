@@ -1,0 +1,45 @@
+{
+  "modelo_candidato": "logistic",
+  "metrica_seleccion": "roc_auc",
+  "resultados": {
+    "baseline": {
+      "accuracy": 0.736,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "roc_auc": 0.5,
+      "confusion_matrix": {
+        "true_negatives": 1037,
+        "false_positives": 0,
+        "false_negatives": 372,
+        "true_positives": 0
+      }
+    },
+    "logistic": {
+      "accuracy": 0.7942,
+      "precision": 0.6627,
+      "recall": 0.4489,
+      "f1": 0.5353,
+      "roc_auc": 0.812,
+      "confusion_matrix": {
+        "true_negatives": 952,
+        "false_positives": 85,
+        "false_negatives": 205,
+        "true_positives": 167
+      }
+    },
+    "forest": {
+      "accuracy": 0.7871,
+      "precision": 0.6731,
+      "recall": 0.3763,
+      "f1": 0.4828,
+      "roc_auc": 0.8025,
+      "confusion_matrix": {
+        "true_negatives": 969,
+        "false_positives": 68,
+        "false_negatives": 232,
+        "true_positives": 140
+      }
+    }
+  }
+}

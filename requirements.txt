@@ -1,0 +1,13 @@
+# Versiones fijadas para poder reproducir el entorno.
+#
+# Nota: la clase 3 propone pandas 2.2.2 / numpy 1.26.4 / scikit-learn 1.5.1,
+# pero esas versiones no tienen wheel para Python 3.13 y pip intenta
+# compilarlas desde fuente. Se subieron a la primera version de cada paquete
+# que si publica wheel para 3.13.
+pandas==2.2.3
+numpy==2.1.3
+scikit-learn==1.5.2
+joblib==1.4.2
+matplotlib==3.9.2
+seaborn==0.13.2
+pytest==8.3.3

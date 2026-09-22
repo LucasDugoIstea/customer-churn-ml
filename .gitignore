@@ -1,0 +1,27 @@
+# Entorno virtual
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Datos: los administra DVC, no Git
+# (dvc add agrega las reglas especificas al hacer el track)
+data/processed/
+
+# Artefactos de modelo
+models/*.joblib
+
+# Notebooks: salidas pesadas
+.ipynb_checkpoints/
+
+# Secretos - nunca van al repo
+.env
+.dvc/config.local
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
