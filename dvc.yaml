@@ -1,0 +1,20 @@
+# Definicion del pipeline como etapas versionables.
+#
+# dvc repro compara los hashes de deps, params y outs: si nada cambio no
+# repite el trabajo, y si algo cambio ejecuta solo las etapas afectadas.
+
+stages:
+  train:
+    cmd: python -m src.training.train
+    deps:
+      - data/raw/customer_churn_historical.csv
+      - src/config.py
+      - src/data/load.py
+      - src/features/build.py
+      - src/training/train.py
+      - src/evaluation/metrics.py
+    outs:
+      - models/churn_pipeline.joblib
+    metrics:
+      - reports/metrics.json:
+          cache: false
