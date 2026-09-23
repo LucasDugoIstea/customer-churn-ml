@@ -1,6 +1,5 @@
 {
   "modelo_candidato": "logistic",
-  "metrica_seleccion": "roc_auc",
   "resultados": {
     "baseline": {
       "accuracy": 0.736,

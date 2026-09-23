@@ -14,7 +14,7 @@ from sklearn.linear_model import LogisticRegression
 
 from src import config
 from src.data.load import load_data, split_data
-from src.evaluation.metrics import evaluate_model, print_report, save_metrics
+from src.evaluation.metrics import evaluate_model, save_metrics
 from src.features.build import build_pipeline
 
 logging.basicConfig(level=logging.INFO)
@@ -67,7 +67,9 @@ def main():
 
         resultados[nombre] = metricas
         pipelines[nombre] = pipeline
-        print_report(nombre, metricas)
+        logger.info("%s: roc_auc=%.4f recall=%.4f precision=%.4f f1=%.4f",
+                    nombre, metricas["roc_auc"], metricas["recall"],
+                    metricas["precision"], metricas["f1"])
 
     # El candidato se elige por ROC-AUC porque mide que tan bien ordena el
     # modelo, sin depender del umbral que se use despues.
