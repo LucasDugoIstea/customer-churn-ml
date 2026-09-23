@@ -53,17 +53,3 @@ def save_metrics(metricas, path):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(metricas, f, indent=2, ensure_ascii=False)
     logger.info("Metricas guardadas en %s", path)
-
-
-def print_report(nombre, metricas):
-    """Imprime las metricas de un modelo de forma legible."""
-    cm = metricas["confusion_matrix"]
-    print("\n--- %s ---" % nombre)
-    print("  accuracy : %.4f" % metricas["accuracy"])
-    print("  precision: %.4f" % metricas["precision"])
-    print("  recall   : %.4f" % metricas["recall"])
-    print("  f1       : %.4f" % metricas["f1"])
-    print("  roc_auc  : %.4f" % metricas["roc_auc"])
-    print("  falsos negativos: %d  (clientes que se iban y no detectamos)"
-          % cm["false_negatives"])
-    print("  falsos positivos: %d" % cm["false_positives"])

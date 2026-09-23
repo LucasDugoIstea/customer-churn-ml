@@ -1,27 +1,21 @@
-# Entorno virtual
-.venv/
-venv/
-
 # Python
 __pycache__/
 *.py[cod]
-*.egg-info/
-.pytest_cache/
+.venv/
+.env
 
-# Datos: los administra DVC, no Git
-# (dvc add agrega las reglas especificas al hacer el track)
-data/processed/
-
-# Artefactos de modelo
+# Modelos generados
+models/*.pkl
 models/*.joblib
 
-# Notebooks: salidas pesadas
+# Notebooks
 .ipynb_checkpoints/
 
-# Secretos - nunca van al repo
-.env
-.dvc/config.local
+# Tests
+.pytest_cache/
 
-# Sistema operativo
+# Sistema / IDE
 .DS_Store
-Thumbs.db
+.vscode/
+
+# Los datasets los ignora DVC: crea su propio .gitignore en data/raw/
