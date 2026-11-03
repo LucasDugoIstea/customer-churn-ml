@@ -1,34 +1,82 @@
 # Parametros del proyecto, versionados junto con el codigo.
-# La idea (clase 4) es que un hiperparametro no quede escondido adentro de un
-# script: si cambia el resultado, tiene que estar declarado en algun lado.
+#
+# src/config.py lee este archivo, asi que lo que esta aca es lo que se usa.
+# Un solo train.py y lo que cambia entre experimentos en este YAML.
+# Si se cambia algo aca, dvc repro reentrena.
 
 split:
   test_size: 0.20
   random_state: 42
-  stratify: true
 
-preprocessing:
-  numeric_imputer: median
-  categorical_imputer: most_frequent
-  scaler: standard
-  encoder: onehot
-  handle_unknown: ignore
+mlflow:
+  experiment_name: churn-classification
+  registered_model: CustomerChurnModel
 
+# Cada entrada es un run de MLflow. La busqueda es chica pero razonada:
+# - baseline: piso minimo, lo que se saca sin aprender nada
+# - regresion logistica con tres niveles de regularizacion (C chico = mas regularizada)
+# - random forest con tres profundidades (mas profundo = mas riesgo de overfitting)
 models:
-  baseline:
-    strategy: most_frequent
-  logistic:
-    max_iter: 1000
-    random_state: 42
-  forest:
-    n_estimators: 300
-    max_depth: 8
-    random_state: 42
+  - run_name: baseline_dummy
+    type: dummy
+    params:
+      strategy: most_frequent
+  - run_name: logistic_C0.1
+    type: logistic
+    params:
+      C: 0.1
+      max_iter: 1000
+  - run_name: logistic_C1
+    type: logistic
+    params:
+      C: 1.0
+      max_iter: 1000
+  - run_name: logistic_C10
+    type: logistic
+    params:
+      C: 10.0
+      max_iter: 1000
+  - run_name: forest_depth6
+    type: forest
+    params:
+      n_estimators: 300
+      max_depth: 6
+  - run_name: forest_depth8
+    type: forest
+    params:
+      n_estimators: 300
+      max_depth: 8
+  - run_name: forest_depth12
+    type: forest
+    params:
+      n_estimators: 300
+      max_depth: 12
 
+# El candidato se elige por roc_auc: mide que tan bien ordena el modelo a los
+# clientes por riesgo, sin depender del umbral que se use despues.
 seleccion:
   metrica: roc_auc
 
+# Umbral para pasar de probabilidad a CHURN / NO_CHURN.
+# Se baja de 0.50 a 0.30 porque el falso negativo (decir que un cliente se
+# queda cuando se va) es el error caro: se pierde al cliente sin haber
+# intentado retenerlo. La justificacion esta en el README y en la seccion 7
+# del notebook de EDA.
+decision:
+  threshold: 0.30
+  positive_class: "Yes"
+
+# Niveles de riesgo que devuelve la API.
+# LOW termina donde empieza la prediccion CHURN, asi nunca sale un CHURN con
+# riesgo LOW. HIGH arranca en 0.60.
 riesgo:
-  low_max: 0.35
-  medium_max: 0.65
-  decision_threshold: 0.50
+  low_max: 0.30
+  medium_max: 0.60
+
+# Promocion en el Model Registry (scripts/promote_model.py).
+# version: "candidate" promueve la version que tenga ese alias; un numero
+# ("1", "2"...) apunta production a esa version, que es como se hace rollback.
+promocion:
+  alias: production
+  version: candidate
+  decision_note: "Regresion logistica con el roc_auc mas alto del experimento; umbral 0.30 para bajar los falsos negativos."
