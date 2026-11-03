@@ -1,33 +1,21 @@
-"""Inferencia: cargar el artefacto entrenado y predecir sobre datos nuevos.
+"""Inferencia: usar el pipeline entrenado sobre clientes nuevos.
 
-Este modulo no entrena nada. Carga el pipeline serializado y lo usa.
+Este modulo no entrena nada ni sabe de HTTP. Es la logica que usa la API y que
+se testea sola: de la probabilidad a la prediccion y al nivel de riesgo.
 """
 
-import logging
-
-import joblib
 import pandas as pd
 
 from src import config
-
-logger = logging.getLogger(__name__)
-
-
-def load_model(path=None):
-    """Carga el pipeline serializado."""
-    path = path or config.MODEL_PATH
-    if not path.exists():
-        raise FileNotFoundError(
-            "No existe el modelo en %s. Correr primero "
-            "python -m src.training.train" % path
-        )
-    pipeline = joblib.load(path)
-    logger.info("Modelo cargado desde %s", path)
-    return pipeline
+from src.evaluation.metrics import positive_proba
 
 
 def get_risk_level(probabilidad):
-    """Traduce la probabilidad a LOW / MEDIUM / HIGH."""
+    """Traduce la probabilidad a LOW / MEDIUM / HIGH.
+
+    LOW termina en el umbral de decision, asi un cliente marcado CHURN nunca
+    sale con riesgo LOW. Los cortes estan en params.yaml.
+    """
     if probabilidad < config.RISK_LOW_MAX:
         return "LOW"
     if probabilidad < config.RISK_MEDIUM_MAX:
@@ -38,23 +26,23 @@ def get_risk_level(probabilidad):
 def predict(pipeline, datos):
     """Predice sobre uno o varios clientes.
 
-    datos puede ser un dict (un cliente) o un DataFrame (varios).
+    datos puede ser un dict (un cliente) o un DataFrame (varios). Devuelve una
+    lista con un diccionario por cliente, en tipos de Python (no de numpy),
+    para que se puedan serializar a JSON.
     """
     if isinstance(datos, dict):
         datos = pd.DataFrame([datos])
 
-    if config.ID_COL in datos.columns:
-        datos = datos.drop(columns=[config.ID_COL])
-
-    probabilidades = pipeline.predict_proba(datos)[:, 1]
+    # El pipeline espera exactamente las columnas con las que se entreno, en
+    # ese orden. Si falta alguna, falla aca con un KeyError claro.
+    datos = datos[config.FEATURES]
 
     salidas = []
-    for proba in probabilidades:
+    for proba in positive_proba(pipeline, datos):
+        proba = float(proba)
         salidas.append({
-            "prediction": "CHURN" if proba >= config.DECISION_THRESHOLD
-                          else "NO_CHURN",
-            "probability": round(float(proba), 4),
+            "prediction": "CHURN" if proba >= config.DECISION_THRESHOLD else "NO_CHURN",
+            "probability": round(proba, 4),
             "risk_level": get_risk_level(proba),
         })
-
     return salidas
