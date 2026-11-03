@@ -7,32 +7,84 @@ stages:
       hash: md5
       md5: 178571792c566f067e3d16b5fb913026
       size: 982638
+      isexec: true
     - path: src/config.py
       hash: md5
-      md5: b1a8a75ccf861a7e5b28c71974520a72
-      size: 2174
+      md5: 6192fb4e75c519918abe7ef30d24090d
+      size: 3630
+      isexec: true
     - path: src/data/load.py
       hash: md5
       md5: 4e34ad866680db8607412960671feb82
       size: 2137
+      isexec: true
     - path: src/evaluation/metrics.py
       hash: md5
-      md5: bb883f5fcfffcd511247488bcccef95c
-      size: 1762
+      md5: a3739f138d8ce27328777d985ba2fb42
+      size: 2188
     - path: src/features/build.py
       hash: md5
       md5: 5320cb8ecded3d425a27c8d79d7ac66a
       size: 1698
+      isexec: true
+    - path: src/training/registry.py
+      hash: md5
+      md5: 7b9de013c5ccd3c27aa44a6498155851
+      size: 4309
     - path: src/training/train.py
       hash: md5
-      md5: e5f60fb2d3312a1a3ca152b2a9678a06
-      size: 2684
+      md5: 7dfa4449c1f580aff67cc0adb73eb3e1
+      size: 5436
+    params:
+      params.yaml:
+        decision:
+          threshold: 0.3
+          positive_class: Yes
+        mlflow:
+          experiment_name: churn-classification
+          registered_model: CustomerChurnModel
+        models:
+        - run_name: baseline_dummy
+          type: dummy
+          params:
+            strategy: most_frequent
+        - run_name: logistic_C0.1
+          type: logistic
+          params:
+            C: 0.1
+            max_iter: 1000
+        - run_name: logistic_C1
+          type: logistic
+          params:
+            C: 1.0
+            max_iter: 1000
+        - run_name: logistic_C10
+          type: logistic
+          params:
+            C: 10.0
+            max_iter: 1000
+        - run_name: forest_depth6
+          type: forest
+          params:
+            n_estimators: 300
+            max_depth: 6
+        - run_name: forest_depth8
+          type: forest
+          params:
+            n_estimators: 300
+            max_depth: 8
+        - run_name: forest_depth12
+          type: forest
+          params:
+            n_estimators: 300
+            max_depth: 12
+        seleccion:
+          metrica: roc_auc
+        split:
+          test_size: 0.2
+          random_state: 42
     outs:
-    - path: models/churn_pipeline.joblib
-      hash: md5
-      md5: 7df6fdbd7d4e67d391fcae63d16fe078
-      size: 9783
     - path: reports/metrics.json
       hash: md5
-      md5: b2e8a937f8ff3598ffccdc0649061a95
-      size: 1004
+      md5: 3d1c3bc5a7ea427600b61bfea9ac8c30
+      size: 2357
