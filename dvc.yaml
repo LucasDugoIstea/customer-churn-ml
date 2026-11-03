@@ -2,6 +2,9 @@
 #
 # dvc repro compara los hashes de deps, params y outs: si nada cambio no
 # repite el trabajo, y si algo cambio ejecuta solo las etapas afectadas.
+#
+# El modelo ya no es una salida de DVC (models/churn_pipeline.joblib): queda
+# registrado en MLflow, que es de donde lo carga la API por alias.
 
 stages:
   train:
@@ -12,9 +15,14 @@ stages:
       - src/data/load.py
       - src/features/build.py
       - src/training/train.py
+      - src/training/registry.py
       - src/evaluation/metrics.py
-    outs:
-      - models/churn_pipeline.joblib
+    params:
+      - split
+      - mlflow
+      - models
+      - seleccion
+      - decision
     metrics:
       - reports/metrics.json:
           cache: false
