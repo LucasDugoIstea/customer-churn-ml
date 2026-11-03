@@ -19,14 +19,18 @@ from sklearn.metrics import (
 logger = logging.getLogger(__name__)
 
 
-def evaluate_model(pipeline, X_test, y_test):
+def evaluate_model(pipeline, X_test, y_test, threshold=0.5):
     """Evalua el pipeline sobre el test y devuelve un diccionario de metricas.
+
+    La clase predicha sale de comparar la probabilidad con el umbral de
+    decision (el mismo que usa la API), no del predict() de sklearn, que
+    siempre corta en 0.5.
 
     roc_auc se calcula sobre la probabilidad y no sobre la clase predicha,
     porque mide que tan bien ordena el modelo, independientemente del umbral.
     """
-    y_pred = pipeline.predict(X_test)
-    y_proba = pipeline.predict_proba(X_test)[:, 1]
+    y_proba = positive_proba(pipeline, X_test)
+    y_pred = (y_proba >= threshold).astype(int)
 
     tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
 
@@ -45,6 +49,16 @@ def evaluate_model(pipeline, X_test, y_test):
     }
 
     return metricas
+
+
+def positive_proba(pipeline, X):
+    """Probabilidad de la clase positiva (churn = 1).
+
+    No se asume que es la columna 1: se busca en classes_, como pide la slide
+    de serving.
+    """
+    columna = list(pipeline.classes_).index(1)
+    return pipeline.predict_proba(X)[:, columna]
 
 
 def save_metrics(metricas, path):
