@@ -62,12 +62,12 @@ Split 80/20 estratificado, umbral 0.30.
 | forest_depth8 | 0.683 | 0.575 | 0.802 |
 | forest_depth12 | 0.669 | 0.570 | 0.796 |
 
-Elegimos por roc_auc. Las logísticas empatan, nos quedamos con C=0.1 que es la más
+Elijo por roc_auc. Las logísticas empatan, me quedo con C=0.1 que es la más
 regularizada. Los random forest dan peor cuanto más profundos.
 
-Bajamos el umbral a 0.30 porque lo que más cuesta es no detectar a un cliente que
+Bajé el umbral a 0.30 porque lo que más cuesta es no detectar a un cliente que
 se va. Con 0.50 el recall era 0.44 (208 falsos negativos) y con 0.30 pasa a 0.70
-(113). Probamos 0.25 pero sumaba muchos falsos positivos para lo poco que ganaba.
+(113). Probé 0.25 pero sumaba muchos falsos positivos para lo poco que ganaba.
 
 Riesgo: LOW menos de 0.30, MEDIUM hasta 0.60, HIGH arriba de eso. En el test se
 fueron el 12.5% de los LOW, el 43.8% de los MEDIUM y el 68.6% de los HIGH.

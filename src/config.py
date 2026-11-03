@@ -1,7 +1,7 @@
 """Configuracion del proyecto.
 
 Las rutas y el contrato de datos (nombres de columnas) viven aca. Los valores
-que son una decision del equipo (semillas, umbrales, modelos a probar) se leen
+que son decisiones de modelado (semillas, umbrales, modelos a probar) se leen
 de params.yaml, asi hay un solo lugar donde cambiarlos y DVC sabe cuando
 reentrenar.
 

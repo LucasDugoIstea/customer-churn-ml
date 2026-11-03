@@ -1,7 +1,7 @@
 """Carga y particion del dataset.
 
 Responsabilidad unica: leer archivos, validar que vengan las columnas que
-esperamos y dividir en train/test. Nada de entrenar ni de transformar.
+se esperan y dividir en train/test. Nada de entrenar ni de transformar.
 """
 
 import logging
